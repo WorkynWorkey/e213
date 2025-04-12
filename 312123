@@ -1,0 +1,95 @@
+-- Создание GUI
+local ScreenGui = Instance.new("ScreenGui", game.Players.LocalPlayer:WaitForChild("PlayerGui"))
+ScreenGui.Name = "AutoFarmGUI"
+
+local buttonsData = {
+    {name = "Auto Bubble + Sell", funcName = "autoBubble"},
+    {name = "Auto Coins", funcName = "autoCoins"},
+    {name = "Auto Playtime Gift", funcName = "autoGift"},
+    {name = "Auto Egg", funcName = "autoEgg"},
+}
+
+local toggles = {
+    autoBubble = false,
+    autoCoins = false,
+    autoGift = false,
+    autoEgg = false
+}
+
+-- Функции
+task.spawn(function()
+    while true do
+        task.wait(0.1)
+        if toggles.autoBubble then
+            local args1 = {[1] = "BlowBubble"}
+            local args2 = {[1] = "SellBubble"}
+            local remote = game:GetService("ReplicatedStorage").Shared.Framework.Network.Remote.Event
+            remote:FireServer(unpack(args1))
+            remote:FireServer(unpack(args2))
+        end
+    end
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(1)
+        if toggles.autoCoins then
+            local folder = workspace.Rendered:GetChildren()[12]
+            for _, item in ipairs(folder:GetChildren()) do
+                if item:IsA("Model") then
+                    local args = {[1] = item.Name}
+                    game.ReplicatedStorage.Remotes.Pickups.CollectPickup:FireServer(unpack(args))
+                    task.wait(0.1)
+                    item:Destroy()
+                end
+            end
+        end
+    end
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(30)
+        if toggles.autoGift then
+            local folder = game.Players.LocalPlayer.PlayerGui.ScreenGui.Playtime.Frame.Main
+            local remote = game.ReplicatedStorage.Shared.Framework.Network.Remote.Function
+            for _, item in ipairs(folder:GetChildren()) do
+                local number = tonumber(item.Name)
+                if number and number >= 1 and number <= 7 then
+                    local completed = item:FindFirstChild("Completed")
+                    if completed and completed.Visible == false then
+                        local args = {"ClaimPlaytime", number}
+                        remote:InvokeServer(unpack(args))
+                    end
+                end
+            end
+        end
+    end
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(0.3)
+        if toggles.autoEgg then
+            local args = {"HatchEgg", "Rainbow Egg", 5}
+            game.ReplicatedStorage.Shared.Framework.Network.Remote.Event:FireServer(unpack(args))
+        end
+    end
+end)
+
+-- Создание кнопок
+for i, data in ipairs(buttonsData) do
+    local button = Instance.new("TextButton", ScreenGui)
+    button.Size = UDim2.new(0, 200, 0, 40)
+    button.Position = UDim2.new(0, 10, 0, 10 + (i - 1) * 50)
+    button.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    button.TextColor3 = Color3.new(1, 1, 1)
+    button.Text = data.name .. " [OFF]"
+    button.Font = Enum.Font.LuckiestGuy
+    button.TextScaled = true
+    button.MouseButton1Click:Connect(function()
+        toggles[data.funcName] = not toggles[data.funcName]
+        button.Text = data.name .. (toggles[data.funcName] and " [ON]" or " [OFF]")
+        button.BackgroundColor3 = toggles[data.funcName] and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(60, 60, 60)
+    end)
+end
