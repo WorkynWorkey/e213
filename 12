@@ -1,0 +1,31 @@
+local function ClaimPlaytime(num)
+    local args = {
+        [1] = "ClaimPlaytime",
+        [2] = num
+    }
+    
+    game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Function"):InvokeServer(unpack(args))
+    print("Claim gift playtime: " .. num)
+end
+
+
+local folder = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.Playtime.Frame.Main
+
+for _, item in ipairs(folder:GetChildren()) do
+    local num = item.Name
+    if item.Name == "1" then
+        print(game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.Playtime.Frame.Main["1"].Button.Label.Text)
+        if game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.Playtime.Frame.Main["1"].Completed.Visible == true then
+            ClaimPlaytime(num)
+        end
+    elseif item.Name == "2" then
+        if game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.Playtime.Frame.Main["2"].Completed.Visible == true then
+            ClaimPlaytime(num)
+        end
+    elseif item.Name == "3" then
+        if game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.Playtime.Frame.Main["3"].Completed.Visible == true then
+            ClaimPlaytime(num)
+        end
+    end
+    end
+end
