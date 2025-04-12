@@ -1,0 +1,90 @@
+-- Auto Blow Bubble + Sell
+task.spawn(function()
+    print("[INFO] AutoBlobAndSell запущен")
+    while true do
+        task.wait(0.1)
+        if getgenv().Config.AutoBlobAndSell then
+            local remote = game:GetService("ReplicatedStorage").Shared.Framework.Network.Remote.Event
+            remote:FireServer("BlowBubble")
+            remote:FireServer("SellBubble")
+        end
+    end
+end)
+
+-- Auto Collect Coins
+task.spawn(function()
+    print("[INFO] AutoCollectCoin запущен")
+    while true do
+        task.wait(1)
+        if getgenv().Config.AutoCollectCoin then
+            local folder = workspace.Rendered:GetChildren()[12]
+            for _, item in ipairs(folder:GetChildren()) do
+                if item:IsA("Model") then
+                    local args = {item.Name}
+                    game.ReplicatedStorage.Remotes.Pickups.CollectPickup:FireServer(unpack(args))
+                    task.wait(0.1)
+                    item:Destroy()
+                end
+            end
+        end
+    end
+end)
+
+-- Auto Claim Playtime Gift
+task.spawn(function()
+    print("[INFO] AutoClaimPlayTime запущен")
+    while true do
+        task.wait(30)
+        if getgenv().Config.AutoClaimPlayTime then
+            local folder = game.Players.LocalPlayer.PlayerGui.ScreenGui.Playtime.Frame.Main
+            local remote = game.ReplicatedStorage.Shared.Framework.Network.Remote.Function
+            for _, item in ipairs(folder:GetChildren()) do
+                local number = tonumber(item.Name)
+                if number and number >= 1 and number <= 7 then
+                    local completed = item:FindFirstChild("Completed")
+                    if completed and completed.Visible == false then
+                        local args = {"ClaimPlaytime", number}
+                        remote:InvokeServer(unpack(args))
+                    end
+                end
+            end
+        end
+    end
+end)
+
+-- Auto Egg Hatch
+task.spawn(function()
+    print("[INFO] AutoEgg запущен")
+    while true do
+        task.wait(0.3)
+        if getgenv().Config.AutoEgg then
+            local eggName = getgenv().Config.Egg_Name or "Rainbow Egg"
+            local args = {"HatchEgg", eggName, 5}
+            game.ReplicatedStorage.Shared.Framework.Network.Remote.Event:FireServer(unpack(args))
+        end
+    end
+end)
+
+-- Auto Claim Chest
+task.spawn(function()
+    print("[INFO] Auto Collect Chest запущен")
+    while true do
+        task.wait(5)
+        if getgenv().Config.ClaimChest then
+            local args = {
+                [1] = "ClaimChest",
+                [2] = "Giant Chest",
+                [3] = true
+            }
+            
+            game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))
+            local args = {
+                [1] = "ClaimChest",
+                [2] = "Void Chest",
+                [3] = true
+            }
+            
+            game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))
+        end
+    end
+end)
