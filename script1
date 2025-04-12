@@ -1,0 +1,79 @@
+
+print("Started Farm")
+task.spawn(function()
+    print("[ INFO ] Started AutoSellAndAutoBubble")
+    for q = 1,10000000 do
+        task.wait(0.1)
+        local args = {
+            [1] = "BlowBubble"
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))
+        local args = {
+            [1] = "SellBubble"
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args)) 
+    end   
+end)
+
+task.spawn(function()
+    print("[ INFO ] Started Auto Claimed Coins")
+    for i = 1,10000000 do
+        task.wait(1)
+        local folder = workspace.Rendered:GetChildren()[12]
+    
+        for _, item in ipairs(folder:GetChildren()) do
+        if item:IsA("Model") then
+            local args = {
+                [1] = item.Name
+            }
+    
+            game:GetService("ReplicatedStorage"):WaitForChild("Remotes")
+                :WaitForChild("Pickups")
+                :WaitForChild("CollectPickup"):FireServer(unpack(args))
+            task.wait(0.1)
+            item:Destroy()
+        end
+        end
+    end  
+end)
+
+task.spawn(function()
+    print("[ INFO ] Started Auto Claimed PlayTime Gift")
+    local folder = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.Playtime.Frame.Main
+    local remote = game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Function")
+    for w = 1, 10000000 do
+        task.wait(30)
+        for _, item in ipairs(folder:GetChildren()) do
+            local name = item.Name
+            local number = tonumber(name)
+        
+            if number and number >= 1 and number <= 7 then
+                local completedFrame = folder[name]:FindFirstChild("Completed")
+                if completedFrame and completedFrame.Visible == false then
+                    print(number)
+                    local args = {
+                        [1] = "ClaimPlaytime",
+                        [2] = number
+                    }
+                    remote:InvokeServer(unpack(args))
+                end
+            end
+        end
+    end
+end)
+
+task.spawn(function()
+    print("[ INFO ] Started Auto Open Best Egg")
+    for t = 1, 100000000 do
+        task.wait(0.3)
+        local args = {
+            [1] = "HatchEgg",
+            [2] = "Rainbow Egg",
+            [3] = 5
+        }
+        
+        game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))
+    end
+end)
