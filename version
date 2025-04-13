@@ -1,0 +1,154 @@
+-- Auto Blow Bubble + Sell
+task.spawn(function()
+    print("[INFO] AutoBlobAndSell")
+    while true do
+        task.wait(0.1)
+        if getgenv().Config.AutoBlobAndSell then
+            local remote = game:GetService("ReplicatedStorage").Shared.Framework.Network.Remote.Event
+            remote:FireServer("BlowBubble")
+            remote:FireServer("SellBubble")
+        end
+    end
+end)
+
+-- Auto Collect Coins
+task.spawn(function()
+    print("[INFO] AutoCollectCoin")
+    while true do
+        task.wait(1)
+        if getgenv().Config.AutoCollectCoin then
+            local folder = workspace.Rendered:GetChildren()[12]
+            for _, item in ipairs(folder:GetChildren()) do
+                if item:IsA("Model") then
+                    local args = {item.Name}
+                    game.ReplicatedStorage.Remotes.Pickups.CollectPickup:FireServer(unpack(args))
+                    task.wait(0.1)
+                    item:Destroy()
+                end
+            end
+        end
+    end
+end)
+
+-- Auto Claim Playtime Gift
+task.spawn(function()
+    print("[INFO] AutoClaimPlayTime")
+    while true do
+        task.wait(60)
+        if getgenv().Config.AutoClaimPlayTime then
+            for i = 1, 10 do
+                task.wait(1)
+                local args = {
+                    [1] = "ClaimPlaytime",
+                    [2] = i
+                }
+                
+                game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Function"):InvokeServer(unpack(args))
+            end
+        end
+    end
+end)
+
+-- Auto Egg Hatch
+task.spawn(function()
+    print("[INFO] AutoEgg")
+    while true do
+        task.wait(0.3)
+        if getgenv().Config.AutoEgg then
+            local eggName = getgenv().Config.Egg_Name or "Rainbow Egg"
+            local args = {"HatchEgg", eggName, 5}
+            game.ReplicatedStorage.Shared.Framework.Network.Remote.Event:FireServer(unpack(args))
+        end
+    end
+end)
+
+-- Auto Claim Chest
+task.spawn(function()
+    print("[INFO] Auto Collect Chest")
+    while true do
+        task.wait(5)
+        if getgenv().Config.ClaimChest then
+            local args = {
+                [1] = "ClaimChest",
+                [2] = "Giant Chest",
+                [3] = true
+            }
+            
+            game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))
+            local args = {
+                [1] = "ClaimChest",
+                [2] = "Void Chest",
+                [3] = true
+            }
+            
+            game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))
+        end
+    end
+end)
+
+-- Auto Buy Merchant
+task.spawn(function()
+    print("[INFO] Auto Buy Merchant")
+    while true do
+        task.wait(5)
+        if getgenv().Config.AutoBuyItemsMerchant then
+            for u = 1, 15 do
+                for k = 1,3 do
+                    local args = {
+                        [1] = "BuyShopItem",
+                        [2] = "alien-shop",
+                        [3] = k
+                    }
+                    
+                    game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))
+                end
+                for l = 1,3 do
+                    local args = {
+                        [1] = "BuyShopItem",
+                        [2] = "shard-shop",
+                        [3] = l
+                    }
+                    
+                    game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))			
+                end
+            end
+            task.wait(160)
+        end
+    end
+end)
+
+-- Auto Play doggyjump
+task.spawn(function()
+    print("[INFO] Auto Play doggyjump")
+    while true do
+        task.wait(5)
+        if getgenv().Config.AutoPlayDoggyJump then
+            task.wait(10)
+            if not game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.DoggyJump.Frame.Inner.Prizes.Content.Prize3.Claimed.visible then
+                print("[INFO] Play to game doggyjump")
+                game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.DoggyJump.Visible = true
+                task.wait(0.5)
+                local Button = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.DoggyJump.Frame.Inner.Main.Area.Overlay.Play.Button
+                if Button then
+                    for _, eventName in pairs({"MouseButton1Down", "MouseButton1Click", "Activated"}) do
+                        for _, connection in pairs(getconnections(Button[eventName])) do
+                            connection:Fire()
+                        end
+                    end
+                    task.wait(1)
+                    for i = 1,3 do
+                        local args = {
+                            [1] = "DoggyJumpWin",
+                            [2] = i
+                        }
+                        
+                        game:GetService("ReplicatedStorage"):WaitForChild("Shared"):WaitForChild("Framework"):WaitForChild("Network"):WaitForChild("Remote"):WaitForChild("Event"):FireServer(unpack(args))
+                    end
+                    print("[INFO] Success get prizez 1,2,3")
+                    task.wait(3)
+                    game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui.DoggyJump.Visible = false
+                end
+            end
+        end
+    end
+end)
