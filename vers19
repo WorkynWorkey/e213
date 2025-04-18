@@ -1,0 +1,104 @@
+getgenv().Config = {
+    ["AutoCollectCoin"] = true,
+    ["AutoBlobAndSell"] = true,
+    ["AutoClaimPlayTime"] = true,
+	["AutoPlayDoggyJump"] = true,
+	["AutoBuyItemsMerchant"] = true,
+    ["ClaimChest"] = true,
+    ["AutoEgg"] = true,
+    ["AutoOpenRift"] = true,
+    ["Egg_Name"] = "Void Egg"
+}
+local bestModel = nil
+local bestLuck = -math.huge
+local bestcframe = nil
+
+
+task.spawn(function()
+    print("[INFO] AutoEgg")
+    while true do
+        task.wait(0.3)
+        if getgenv().Config.AutoEgg then
+            local eggName = getgenv().Config.Egg_Name or "Rainbow Egg"
+            local args = {"HatchEgg", eggName, 6}
+            game.ReplicatedStorage.Shared.Framework.Network.Remote.Event:FireServer(unpack(args))
+        end
+    end
+end)
+
+while true do
+    task.wait(3)
+    local bestModel = nil
+    local bestLuck = -math.huge
+    local bestcframe = nil
+
+    for _, model in ipairs(workspace.Rendered.Rifts:GetChildren()) do
+        if model:IsA("Model") then
+            local luckText = model:FindFirstChild("Display")
+            if luckText and luckText:FindFirstChild("SurfaceGui") and luckText.SurfaceGui:FindFirstChild("Icon") and luckText.SurfaceGui.Icon:FindFirstChild("Luck") then
+                print("Found | " .. model.Name .. " | Luck: " .. luckText.SurfaceGui.Icon.Luck.Text)
+
+                local eggName = getgenv().Config.Egg_Name or "Rainbow Egg"
+                local eggName = "void-egg"
+                if model.Name == eggName then
+                    local luckStr = luckText.SurfaceGui.Icon.Luck.Text
+                    local luckNumber = tonumber(luckStr:match("x(%d+)"))
+                    if luckNumber and luckNumber > bestLuck then
+                        bestcframe = luckText.CFrame
+                        bestLuck = luckNumber
+                        bestModel = model
+                    end
+                end
+            else
+                print("Found | " .. model.Name)
+                if model.Name == "royal-chest" then
+                    local webhookUrl = "https://discord.com/api/webhooks/1337312412348448779/vTVgVNC-pFDEl0pPPQWV_VYfVMIWwOI6AiYlQcdgu6qyFZHy3upbnX7By7p9VNMnsVPJ"
+                    local message = "roblox://placeId=85896571713843&gameInstanceId=".. game.JobId
+                    local title = "Found Royal Chest! 🏰"
+                    local description = "A Royal Chest has been found!"
+                    local thumbnailUrl = "https://static.wikia.nocookie.net/bgs-infinity/images/3/31/RoyalChest2.png/revision/latest?cb=20250417081313"
+                elseif model.Name == "man-egg" then
+                    local webhookUrl = "https://discord.com/api/webhooks/1337312412348448779/vTVgVNC-pFDEl0pPPQWV_VYfVMIWwOI6AiYlQcdgu6qyFZHy3upbnX7By7p9VNMnsVPJ"
+                    local message = "roblox://placeId=85896571713843&gameInstanceId=".. game.JobId
+                    local title = "Found Man Egg 🥚"
+                    local description = "A Man egg Found!"
+                    local thumbnailUrl = "https://static.wikia.nocookie.net/bgs-infinity/images/2/2e/Aura_Egg.png/revision/latest/scale-to-width-down/1000?cb=20250413042632"
+                end
+            end
+        end
+    end
+
+    if bestModel then
+        print("Best Egg: " .. bestModel.Name .. " | Luck: x" .. bestLuck)
+        bestModel.Name = "Opened"
+        local TweenService = game:GetService("TweenService")
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+        local tweenInfo = TweenInfo.new(
+            10,
+            Enum.EasingStyle.Linear,
+            Enum.EasingDirection.Out
+        )
+
+        local goal = {}
+        goal.CFrame = bestcframe * CFrame.new(0, 5, 0)
+
+        local tween = TweenService:Create(humanoidRootPart, tweenInfo, goal)
+        tween:Play()
+        task.wait(11)
+        tween:Cancel()
+        while true do
+            task.wait(5)
+            local modelExists = workspace.Rendered.Rifts:FindFirstChild("Opened") ~= nil
+            if modelExists then
+                --- Test
+            else
+                break
+            end
+        end
+    else
+        print("No best model found, restarting search...")
+    end
+end
